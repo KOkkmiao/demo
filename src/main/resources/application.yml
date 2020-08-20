@@ -1,0 +1,76 @@
+#seed项目配置
+project:
+  base-package-prefix: cn.ehai #项目包名前缀 默认为cn.ehai 如果不是请加上下面的配置
+  apollo:
+    common-namespace: EHI.JavaCommon #公共配置namespace 默认EHI.JavaCommon
+    db-namespace: EHI.DBConfig #数据库配置namespace 默认EHI.DBConfig
+    db-key: Apollo_YD_HiCar #数据库KEY
+  feign: #rpc-feign组件依赖该配置
+    connect-timeout-millis: 20000 #feign连接超时
+    read-timeout-millis: 20000 #feign读取超时
+
+server:
+  context-path: /java
+  port: 8888
+
+spring:
+  jmx:
+    default-domain: java-seed-api #jmx名称设置为项目名称
+  datasource:  #Druid相关配置
+    druid:
+      initial-size: 5
+      max-active: 30
+      min-idle: 2
+      filters: stat,wall
+      filter:
+        wall:
+          enabled: true
+          db-type: mysql
+          config:
+            select-all-column-allow: false
+            select-into-allow: false
+            delete-allow: false
+            replace-allow: true
+            truncate-allow: false
+            create-table-allow: false
+            alter-table-allow: false
+            drop-table-allow: false
+            update-where-alay-true-check: true
+            update-where-none-check: true
+            condition-and-alway-true-allow: true
+            condition-like-true-allow: true
+            delete-where-none-check: true
+            select-limit: 500
+            comment-allow: true
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        exclusions: /druid/*,*.js,*.gif,*.jpg,*.png,*.css,*.ico
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        login-username: admin
+        login-password: ehai@123
+        reset-enable: true
+        allow:
+      connection-init-sqls: "set names utf8mb4;"
+
+#javamelody配置
+javamelody:
+  enabled: true
+  spring-monitoring-enabled: true
+  init-parameters:
+    log: false
+    authorized-users: admin:yihai@admin
+
+#JMX域
+endpoints:
+  jmx:
+    unique-names: true
+
+#在启动阶段注入application配置信息
+apollo:
+  bootstrap:
+    enabled: true
+user:
+  projectname: userpro

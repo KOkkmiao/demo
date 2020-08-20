@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.pack.dao.ContractInfoDao">
+
+    <resultMap type="com.example.demo.pack.entity.ContractInfo" id="ContractInfoMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="contractNo" column="contract_no" jdbcType="VARCHAR"/>
+        <result property="contractTotalPrice" column="contract_total_price" jdbcType="NUMERIC"/>
+        <result property="contractName" column="contract_name" jdbcType="VARCHAR"/>
+        <result property="contractType" column="contract_type" jdbcType="INTEGER"/>
+        <result property="departmentId" column="department_id" jdbcType="INTEGER"/>
+        <result property="operator" column="operator" jdbcType="VARCHAR"/>
+        <result property="firstParty" column="first_party" jdbcType="VARCHAR"/>
+        <result property="firstPartyContacts" column="first_party_contacts" jdbcType="VARCHAR"/>
+        <result property="firstPartyContactsPhoneNumber" column="first_party_contacts_phone_number" jdbcType="VARCHAR"/>
+        <result property="secondParty" column="second_party" jdbcType="VARCHAR"/>
+        <result property="secondPartyContacts" column="second_party_contacts" jdbcType="VARCHAR"/>
+        <result property="secondPartyContactsPhoneNumber" column="second_party_contacts_phone_number" jdbcType="VARCHAR"/>
+        <result property="contractBeginTime" column="contract_begin_time" jdbcType="TIMESTAMP"/>
+        <result property="contractEndTime" column="contract_end_time" jdbcType="TIMESTAMP"/>
+        <result property="rentArea" column="rent_area" jdbcType="NUMERIC"/>
+        <result property="freeRentBeginTime" column="free_rent_begin_time" jdbcType="TIMESTAMP"/>
+        <result property="freeRentEndTime" column="free_rent_end_time" jdbcType="TIMESTAMP"/>
+        <result property="isValid" column="is_valid" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="gmtCreate" column="gmt_create" jdbcType="TIMESTAMP"/>
+        <result property="gmtModified" column="gmt_modified" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ContractInfoMap">
+        select
+          id, contract_no, contract_total_price, contract_name, contract_type, department_id, operator, first_party, first_party_contacts, first_party_contacts_phone_number, second_party, second_party_contacts, second_party_contacts_phone_number, contract_begin_time, contract_end_time, rent_area, free_rent_begin_time, free_rent_end_time, is_valid, status, gmt_create, gmt_modified
+        from yd_koala_finance.contract_info
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ContractInfoMap">
+        select
+          id, contract_no, contract_total_price, contract_name, contract_type, department_id, operator, first_party, first_party_contacts, first_party_contacts_phone_number, second_party, second_party_contacts, second_party_contacts_phone_number, contract_begin_time, contract_end_time, rent_area, free_rent_begin_time, free_rent_end_time, is_valid, status, gmt_create, gmt_modified
+        from yd_koala_finance.contract_info
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ContractInfoMap">
+        select
+          id, contract_no, contract_total_price, contract_name, contract_type, department_id, operator, first_party, first_party_contacts, first_party_contacts_phone_number, second_party, second_party_contacts, second_party_contacts_phone_number, contract_begin_time, contract_end_time, rent_area, free_rent_begin_time, free_rent_end_time, is_valid, status, gmt_create, gmt_modified
+        from yd_koala_finance.contract_info
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="contractNo != null and contractNo != ''">
+                and contract_no = #{contractNo}
+            </if>
+            <if test="contractTotalPrice != null">
+                and contract_total_price = #{contractTotalPrice}
+            </if>
+            <if test="contractName != null and contractName != ''">
+                and contract_name = #{contractName}
+            </if>
+            <if test="contractType != null">
+                and contract_type = #{contractType}
+            </if>
+            <if test="departmentId != null">
+                and department_id = #{departmentId}
+            </if>
+            <if test="operator != null and operator != ''">
+                and operator = #{operator}
+            </if>
+            <if test="firstParty != null and firstParty != ''">
+                and first_party = #{firstParty}
+            </if>
+            <if test="firstPartyContacts != null and firstPartyContacts != ''">
+                and first_party_contacts = #{firstPartyContacts}
+            </if>
+            <if test="firstPartyContactsPhoneNumber != null and firstPartyContactsPhoneNumber != ''">
+                and first_party_contacts_phone_number = #{firstPartyContactsPhoneNumber}
+            </if>
+            <if test="secondParty != null and secondParty != ''">
+                and second_party = #{secondParty}
+            </if>
+            <if test="secondPartyContacts != null and secondPartyContacts != ''">
+                and second_party_contacts = #{secondPartyContacts}
+            </if>
+            <if test="secondPartyContactsPhoneNumber != null and secondPartyContactsPhoneNumber != ''">
+                and second_party_contacts_phone_number = #{secondPartyContactsPhoneNumber}
+            </if>
+            <if test="contractBeginTime != null">
+                and contract_begin_time = #{contractBeginTime}
+            </if>
+            <if test="contractEndTime != null">
+                and contract_end_time = #{contractEndTime}
+            </if>
+            <if test="rentArea != null">
+                and rent_area = #{rentArea}
+            </if>
+            <if test="freeRentBeginTime != null">
+                and free_rent_begin_time = #{freeRentBeginTime}
+            </if>
+            <if test="freeRentEndTime != null">
+                and free_rent_end_time = #{freeRentEndTime}
+            </if>
+            <if test="isValid != null">
+                and is_valid = #{isValid}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="gmtCreate != null">
+                and gmt_create = #{gmtCreate}
+            </if>
+            <if test="gmtModified != null">
+                and gmt_modified = #{gmtModified}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into yd_koala_finance.contract_info(contract_no, contract_total_price, contract_name, contract_type, department_id, operator, first_party, first_party_contacts, first_party_contacts_phone_number, second_party, second_party_contacts, second_party_contacts_phone_number, contract_begin_time, contract_end_time, rent_area, free_rent_begin_time, free_rent_end_time, is_valid, status, gmt_create, gmt_modified)
+        values (#{contractNo}, #{contractTotalPrice}, #{contractName}, #{contractType}, #{departmentId}, #{operator}, #{firstParty}, #{firstPartyContacts}, #{firstPartyContactsPhoneNumber}, #{secondParty}, #{secondPartyContacts}, #{secondPartyContactsPhoneNumber}, #{contractBeginTime}, #{contractEndTime}, #{rentArea}, #{freeRentBeginTime}, #{freeRentEndTime}, #{isValid}, #{status}, #{gmtCreate}, #{gmtModified})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update yd_koala_finance.contract_info
+        <set>
+            <if test="contractNo != null and contractNo != ''">
+                contract_no = #{contractNo},
+            </if>
+            <if test="contractTotalPrice != null">
+                contract_total_price = #{contractTotalPrice},
+            </if>
+            <if test="contractName != null and contractName != ''">
+                contract_name = #{contractName},
+            </if>
+            <if test="contractType != null">
+                contract_type = #{contractType},
+            </if>
+            <if test="departmentId != null">
+                department_id = #{departmentId},
+            </if>
+            <if test="operator != null and operator != ''">
+                operator = #{operator},
+            </if>
+            <if test="firstParty != null and firstParty != ''">
+                first_party = #{firstParty},
+            </if>
+            <if test="firstPartyContacts != null and firstPartyContacts != ''">
+                first_party_contacts = #{firstPartyContacts},
+            </if>
+            <if test="firstPartyContactsPhoneNumber != null and firstPartyContactsPhoneNumber != ''">
+                first_party_contacts_phone_number = #{firstPartyContactsPhoneNumber},
+            </if>
+            <if test="secondParty != null and secondParty != ''">
+                second_party = #{secondParty},
+            </if>
+            <if test="secondPartyContacts != null and secondPartyContacts != ''">
+                second_party_contacts = #{secondPartyContacts},
+            </if>
+            <if test="secondPartyContactsPhoneNumber != null and secondPartyContactsPhoneNumber != ''">
+                second_party_contacts_phone_number = #{secondPartyContactsPhoneNumber},
+            </if>
+            <if test="contractBeginTime != null">
+                contract_begin_time = #{contractBeginTime},
+            </if>
+            <if test="contractEndTime != null">
+                contract_end_time = #{contractEndTime},
+            </if>
+            <if test="rentArea != null">
+                rent_area = #{rentArea},
+            </if>
+            <if test="freeRentBeginTime != null">
+                free_rent_begin_time = #{freeRentBeginTime},
+            </if>
+            <if test="freeRentEndTime != null">
+                free_rent_end_time = #{freeRentEndTime},
+            </if>
+            <if test="isValid != null">
+                is_valid = #{isValid},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="gmtCreate != null">
+                gmt_create = #{gmtCreate},
+            </if>
+            <if test="gmtModified != null">
+                gmt_modified = #{gmtModified},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from yd_koala_finance.contract_info where id = #{id}
+    </delete>
+
+</mapper>

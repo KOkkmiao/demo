@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.springframework.org/schema/mvc">
+<head>
+    <title>报表页面</title>
+    <link rel="icon" href="http://www.icontuku.com/download/ico/100827" type="image/x-icon"/>
+    <style>
+        a{
+            display: block;
+             height: 25px;
+             width: 150px;
+             text-align: center;
+              background: #F00;
+             color: #ffffff;
+            font-size: 14px;
+             font-weight: bold;
+              text-decoration: none;
+              padding-top: 8px;
+              margin-top:3px;
+             border-radius:10px;
+            margin: 35px auto;
+        }
+    </style>
+</head>
+<body>
+    <a th:each="item,itecount : ${list}" th:text="${item.name}" th:href="${item.url}"></a>
+</body>
+</html>
