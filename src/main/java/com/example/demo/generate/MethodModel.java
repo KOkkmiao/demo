@@ -10,7 +10,11 @@ import java.util.List;
  */
 public class MethodModel {
     private String methodName;
-
+    /**
+     * 返回值需要特殊处理。
+     * 如果是单独返回一个基本类型 则为"string"
+     * 如果是实体 则#/definitions/Result
+     */
     private String returnName;
     /**
      * get post put delete
@@ -22,11 +26,11 @@ public class MethodModel {
     /**
      * 入参类型
      */
-    private String consumes;
+    private List<String> consumes;
     /**
      * 返参类型
      */
-    private String produces;
+    private List<String> produces;
 
     private String parameters;
     /**
@@ -39,7 +43,7 @@ public class MethodModel {
     private String description;
 
 
-    private List<GetParam> getParams;
+    private List<? extends Param> params;
 
     public String getMethodName() {
         return methodName;
@@ -65,19 +69,27 @@ public class MethodModel {
         this.apiType = apiType;
     }
 
-    public String getConsumes() {
+    public List<? extends Param> getParams() {
+        return params;
+    }
+
+    public void setParams(List<? extends Param> params) {
+        this.params = params;
+    }
+
+    public List<String> getConsumes() {
         return consumes;
     }
 
-    public void setConsumes(String consumes) {
+    public void setConsumes(List<String> consumes) {
         this.consumes = consumes;
     }
 
-    public String getProduces() {
+    public List<String> getProduces() {
         return produces;
     }
 
-    public void setProduces(String produces) {
+    public void setProduces(List<String> produces) {
         this.produces = produces;
     }
 
@@ -89,13 +101,6 @@ public class MethodModel {
         this.parameters = parameters;
     }
 
-    public List<GetParam> getGetParams() {
-        return getParams;
-    }
-
-    public void setGetParams(List<GetParam> getParams) {
-        this.getParams = getParams;
-    }
 
     public String getInterfaceName() {
         return interfaceName;
@@ -121,9 +126,20 @@ public class MethodModel {
         this.description = description;
     }
 
-    public static class GetParam{
+    public static abstract class Param{
         private String name;
         private boolean required;
+        private String description;
+        private String in;
+
+        public String getIn() {
+            return in;
+        }
+
+        public void setIn(String in) {
+            this.in = in;
+        }
+
         /**
          * 基本数据类型
          */
@@ -151,6 +167,41 @@ public class MethodModel {
 
         public void setType(String type) {
             this.type = type;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+    }
+    public static class TypeParam extends Param{
+        private String type;
+
+        @Override
+        public String getType() {
+            return type;
+        }
+
+        @Override
+        public void setType(String type) {
+            this.type = type;
+        }
+    }
+    public static class SchemaParam extends Param{
+        /**
+         * 实体的引用
+         */
+        private String schema;
+
+        public String getSchema() {
+            return schema;
+        }
+
+        public void setSchema(String schema) {
+            this.schema = schema;
         }
     }
 

@@ -14,4 +14,8 @@ public enum  RequestMethod {
     RequestMethod(String lowName) {
         this.lowName = lowName;
     }
+    public static boolean isGetMethod(String target){
+        return GET.lowName.equals(target);
+    }
+
 }

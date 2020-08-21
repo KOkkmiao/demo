@@ -146,13 +146,26 @@ public class GenerateUtils {
                 JSONObject value = (JSONObject) stringObjectEntry.getValue();
                 String methodDescription = value.getString("summary");
                 methodModel.setDescription(methodDescription);
-                 String methodName = value.getString("operationId");
+                String methodName = value.getString("operationId");
                 methodModel.setMethodName(methodName);
-                String consumes = value.getString("consumes");
-                String produces = value.getString("produces");
+                 List<String> consumes = value.getJSONArray("consumes").toJavaList(String.class);
+                List<String> produces = value.getJSONArray("produces").toJavaList(String.class);
                 methodModel.setConsumes(consumes);
                 methodModel.setProduces(produces);
-                if ()
+                String returnName = (String) getObject(value, "responses.200.schema.$ref");
+                Optional<ContentsConvert> contentsConvert = ContentsConvert.ifContainGet(returnName);
+                if (contentsConvert.isPresent()) {
+                    methodModel.setReturnName(contentsConvert.get().name);
+                } else {
+                    methodModel.setReturnName(returnName);
+                }
+                //如果为get请求则通过list 进行遍历 使用TypeParam  规定post 所有请求参数只能在实体内
+                if (RequestMethod.isGetMethod(urlMethodType)) {
+                    JSONArray parameters = value.getJSONArray("parameters");
+                    methodModel.setParams(parameters.toJavaList(MethodModel.TypeParam.class));
+                }else{
+
+                }
             }
         }
 
