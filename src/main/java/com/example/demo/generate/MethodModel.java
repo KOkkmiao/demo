@@ -1,5 +1,13 @@
 package com.example.demo.generate;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.parser.Feature;
+import com.alibaba.fastjson.parser.ParserConfig;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -32,7 +40,6 @@ public class MethodModel {
      */
     private List<String> produces;
 
-    private String parameters;
     /**
      * 例：/targetInterface/var
      */
@@ -43,7 +50,7 @@ public class MethodModel {
     private String description;
 
 
-    private List<? extends Param> params;
+    private List<? super Param> params=new ArrayList<>();
 
     public String getMethodName() {
         return methodName;
@@ -69,12 +76,12 @@ public class MethodModel {
         this.apiType = apiType;
     }
 
-    public List<? extends Param> getParams() {
+    public List<? super Param> getParams() {
         return params;
     }
 
     public void setParams(List<? extends Param> params) {
-        this.params = params;
+            this.params.addAll(params);
     }
 
     public List<String> getConsumes() {
@@ -91,14 +98,6 @@ public class MethodModel {
 
     public void setProduces(List<String> produces) {
         this.produces = produces;
-    }
-
-    public String getParameters() {
-        return parameters;
-    }
-
-    public void setParameters(String parameters) {
-        this.parameters = parameters;
     }
 
 
@@ -126,83 +125,11 @@ public class MethodModel {
         this.description = description;
     }
 
-    public static abstract class Param{
-        private String name;
-        private boolean required;
-        private String description;
-        private String in;
 
-        public String getIn() {
-            return in;
-        }
-
-        public void setIn(String in) {
-            this.in = in;
-        }
-
-        /**
-         * 基本数据类型
-         */
-        private String type;
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public boolean isRequired() {
-            return required;
-        }
-
-        public void setRequired(boolean required) {
-            this.required = required;
-        }
-
-        public String getType() {
-            return type;
-        }
-
-        public void setType(String type) {
-            this.type = type;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public void setDescription(String description) {
-            this.description = description;
-        }
-    }
-    public static class TypeParam extends Param{
-        private String type;
-
-        @Override
-        public String getType() {
-            return type;
-        }
-
-        @Override
-        public void setType(String type) {
-            this.type = type;
-        }
-    }
-    public static class SchemaParam extends Param{
-        /**
-         * 实体的引用
-         */
-        private String schema;
-
-        public String getSchema() {
-            return schema;
-        }
-
-        public void setSchema(String schema) {
-            this.schema = schema;
-        }
+    public static void main(String[] args) {
+        List<? super Param> objects = new ArrayList<>();
+        objects.add(new TypeParam());
+        System.out.println(objects.get(0));
     }
 
 }

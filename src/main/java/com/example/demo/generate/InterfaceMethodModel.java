@@ -1,5 +1,6 @@
 package com.example.demo.generate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -42,7 +43,7 @@ public class InterfaceMethodModel {
     /**
      * 方法信息
      */
-    private List<MethodModel> methodModels;
+    private List<MethodModel> methodModels=new ArrayList<>();
 
     public String getInterfaceName() {
         return interfaceName;
@@ -82,6 +83,9 @@ public class InterfaceMethodModel {
 
     public void setMethodModels(List<MethodModel> methodModels) {
         this.methodModels = methodModels;
+    }
+    public void addMethodModels(MethodModel methodModels) {
+        this.methodModels.add(methodModels);
     }
 
     public String getHttpPath() {

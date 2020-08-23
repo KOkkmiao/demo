@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -13,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.example.demo.generate.Contents.*;
 
@@ -45,10 +47,12 @@ public class GenerateUtils {
 
     public void generate() throws Exception {
         //获取swagger 信息
+        //swagger 中有"$" 字符需要删除掉，原因是无法解析 会被识别为特殊内容
         OkHttpClient okHttpClient = new OkHttpClient();
         Call call = okHttpClient.newCall(new Request.Builder().get().url(url).build());
         Response execute = call.execute();
         String respones = execute.body().string();
+        respones = respones.replaceAll("\\$", "");
         if (!execute.message().equals("OK")) {
             throw new Exception("url 地址错误" + respones);
         }
@@ -77,6 +81,7 @@ public class GenerateUtils {
         Map<String, String> modelpath = new HashMap();
         for (Map.Entry<String, Object> entry : entries) {
             String key = entry.getKey();
+            //这种返回参数的key 直接忽略
             if (key.contains("《")) {
                 continue;
             }
@@ -116,8 +121,6 @@ public class GenerateUtils {
                 memberMo.setDescription(description == null ? "" : description);
             }
         }
-
-
         JSONArray tags = jsonObject.getJSONArray("tags");
         //所有的controller 名称和描述所有的接口名称
         List<Tags> tagsList = tags.toJavaList(Tags.class);
@@ -138,6 +141,7 @@ public class GenerateUtils {
             Set<Map.Entry<String, Object>> entries1 = apiType.entrySet();
             InterfaceMethodModel targetInterface = interfaceMap.get(getObject((JSONObject) pathEntity.getValue(), "get.tags"));
             MethodModel methodModel = new MethodModel();
+            targetInterface.addMethodModels(methodModel);
             methodModel.setHttpRout(path);
             for (Map.Entry<String, Object> stringObjectEntry : entries1) {
                 // get put post delete
@@ -152,6 +156,7 @@ public class GenerateUtils {
                 List<String> produces = value.getJSONArray("produces").toJavaList(String.class);
                 methodModel.setConsumes(consumes);
                 methodModel.setProduces(produces);
+
                 String returnName = (String) getObject(value, "responses.200.schema.$ref");
                 Optional<ContentsConvert> contentsConvert = ContentsConvert.ifContainGet(returnName);
                 if (contentsConvert.isPresent()) {
@@ -160,16 +165,42 @@ public class GenerateUtils {
                     methodModel.setReturnName(returnName);
                 }
                 //如果为get请求则通过list 进行遍历 使用TypeParam  规定post 所有请求参数只能在实体内
+                JSONArray parameters = value.getJSONArray("parameters");
                 if (RequestMethod.isGetMethod(urlMethodType)) {
-                    JSONArray parameters = value.getJSONArray("parameters");
-                    methodModel.setParams(parameters.toJavaList(MethodModel.TypeParam.class));
+                    methodModel.setParams(parameters.toJavaList(TypeParam.class));
                 }else{
-
+                    //有type 的
+                    Map<String, List<Object>> type1 = parameters.parallelStream().collect(Collectors.groupingBy(k -> {
+                                String type = ((JSONObject) k).getString("type");
+                                if (type == null) {
+                                    return "schema";
+                                }
+                                return "type";
+                            })
+                    );
+                    if (type1.get("type")!=null){
+                        List<TypeParam> type = toJavaList(TypeParam.class, type1.get("type"));
+                        methodModel.setParams(type);
+                    }else if (type1.get("schema")!=null){
+                        List<SchemaParam> schema = toJavaList(SchemaParam.class, type1.get("schema"));
+                        methodModel.setParams(schema);
+                    }
                 }
             }
         }
 
 
+    }
+    public <T> List<T>  toJavaList(Class<T> clazz, List<Object> list){
+        if (list==null||list.size()==0){
+            return null;
+        }
+        List<T> result = new ArrayList<T>();
+        list.forEach((item)->{
+
+             result.add(((JSONObject)item).toJavaObject(clazz));
+        });
+        return result;
     }
 
     public Object getObject(JSONObject object, String getType) {
@@ -188,10 +219,5 @@ public class GenerateUtils {
     }
 
     public static void main(String[] args) {
-        //
-        String urlPath = "http://java2.demo.ehi.com.cn/Reporting-System/v2/api-docs";
-        String substring = urlPath.substring(0, urlPath.lastIndexOf("/"));
-        urlPath = substring.substring(0, substring.lastIndexOf("/"));
-        System.out.println(urlPath);
     }
 }
