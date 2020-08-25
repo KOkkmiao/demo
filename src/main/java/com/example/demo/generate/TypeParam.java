@@ -7,8 +7,8 @@ package com.example.demo.generate;
  * @Version: 1.0
  */
 public class TypeParam extends Param {
-    private String type;
 
+    private String type;
 
     public String getType() {
         return type;
@@ -18,4 +18,5 @@ public class TypeParam extends Param {
     public void setType(String type) {
         this.type = type;
     }
+
 }

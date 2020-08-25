@@ -10,11 +10,12 @@ import java.util.Optional;
  * desc : 根据名称进行转化 如file ->MultipartFile 文件上传
  */
 public enum  ContentsConvert {
-    file("MultipartFile");
+    file("MultipartFile","import org.springframework.web.multipart;\n");
     public String name;
-
-    ContentsConvert(String name) {
+    public String packageName;
+    ContentsConvert(String name,String packageName) {
         this.name = name;
+        this.packageName=packageName;
     }
 
     /**

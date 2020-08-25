@@ -1,6 +1,7 @@
 package com.example.demo.generate;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -39,7 +40,7 @@ public class InterfaceMethodModel {
     /**
      * 需要导入的包
      */
-    private Set<String> importProperties;
+    private Set<String> importProperties=new HashSet<>();
     /**
      * 方法信息
      */
@@ -75,6 +76,10 @@ public class InterfaceMethodModel {
 
     public void setImportProperties(Set<String> importProperties) {
         this.importProperties = importProperties;
+    }
+
+    public void addPackage(String packagePath){
+        importProperties.add(packagePath);
     }
 
     public List<MethodModel> getMethodModels() {

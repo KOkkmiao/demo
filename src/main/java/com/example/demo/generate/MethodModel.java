@@ -49,8 +49,14 @@ public class MethodModel {
      */
     private String description;
 
-
-    private List<? super Param> params=new ArrayList<>();
+    /**
+     * get请求体
+     */
+    private List<TypeParam> params=new ArrayList<>();
+    /**
+     * post 请求body 体
+     */
+    private List<SchemaParam> paramsObject=new ArrayList<>();
 
     public String getMethodName() {
         return methodName;
@@ -76,12 +82,12 @@ public class MethodModel {
         this.apiType = apiType;
     }
 
-    public List<? super Param> getParams() {
+    public List<TypeParam> getParams() {
         return params;
     }
 
-    public void setParams(List<? extends Param> params) {
-            this.params.addAll(params);
+    public void setParams(List<TypeParam> params) {
+        this.params = params;
     }
 
     public List<String> getConsumes() {
@@ -125,11 +131,11 @@ public class MethodModel {
         this.description = description;
     }
 
-
-    public static void main(String[] args) {
-        List<? super Param> objects = new ArrayList<>();
-        objects.add(new TypeParam());
-        System.out.println(objects.get(0));
+    public List<SchemaParam> getParamsObject() {
+        return paramsObject;
     }
 
+    public void setParamsObject(List<SchemaParam> paramsObject) {
+        this.paramsObject = paramsObject;
+    }
 }

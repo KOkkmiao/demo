@@ -35,12 +35,12 @@ public class MemberModel {
         return memberType;
     }
 
-    public void setMemberType(String memberType) {
-        this.memberType = memberType;
-    }
-
     public String getItemName() {
         return itemName;
+    }
+
+    public void setMemberType(String memberType) {
+        this.memberType = memberType;
     }
 
     public void setItemName(String itemName) {
