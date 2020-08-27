@@ -1,6 +1,5 @@
 package com.example.demo.generate;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.DefaultJSONParser;
 import com.alibaba.fastjson.parser.JSONToken;
@@ -43,18 +42,4 @@ public class RefObjectSerialized implements ObjectDeserializer {
         return JSONToken.NEW;
     }
 
-    public static void main(String[] args) {
-        String string = "{\n" +
-                "                        \"in\":\"body\",\n" +
-                "                        \"name\":\"condition\",\n" +
-                "                        \"description\":\"condition\",\n" +
-                "                        \"required\":true,\n" +
-                "                        \"schema\":{\n" +
-                "                            \"ref\":\"#/definitions/ReportServiceSettingEntity\"\n" +
-                "                        }\n" +
-                "                    }";
-        SchemaParam schemaParam1 = JSON.parseObject(string, SchemaParam.class);
-        SchemaParam schemaParam = JSON.parseObject(JSON.parseObject(string).toJSONString(), SchemaParam.class);
-        System.out.println();
-    }
 }

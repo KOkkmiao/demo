@@ -216,9 +216,9 @@ public class GenerateUtils {
                         ContentsImport.getValue(substring1).ifPresent(z -> targetInterface.addPackage(z.path));
                         String className1 = ModelClassType.getClassName(substring1);
                         replace = replace.replaceFirst(substring1, className1.trim());
-                    }else{
+                    } else {
                         String s = modelpath.get(replace);
-                        if(s!=null){
+                        if (s != null) {
                             targetInterface.addPackage(s);
                         }
                     }
@@ -265,12 +265,16 @@ public class GenerateUtils {
         //实体写入文件中
         File fileEntity = new File(classPath + MODELPATH);
         File fileApi = new File(classPath + APIPATH);
+        File serviceFile= new File(classPath + SERVICEPATH+"\\"+IMPLPATH);
 
         if (!fileApi.exists()) {
             fileApi.mkdirs();
         }
         if (!fileEntity.exists()) {
             fileEntity.mkdirs();
+        }
+        if (!serviceFile.exists()) {
+            serviceFile.mkdirs();
         }
         for (Model model : models) {
             File file = new File(classPath + MODELPATH + "\\" + model.getModelName() + DOT + JAVA);
@@ -338,26 +342,70 @@ public class GenerateUtils {
 
         //生成对应的接口
         Collection<InterfaceMethodModel> values = interfaceMap.values();
-        for (
-                InterfaceMethodModel value : values) {
-            File file = new File(classPath + APIPATH + "\\" + getInterfaceName(value.getInterfaceName()) + DOT + JAVA);
+        //接口类地址
+        Map<String, String> interfacepath = new HashMap();
+        for (InterfaceMethodModel value : values) {
+            //feign 接口路径
+            String interfacePath = IMPORT+packagePath + DOT + APIPATH + DOT + getInterfaceName(value.getInterfaceName()) + SPERATOR;
+            //fein 接口class 路径
+            String interfaceClass = classPath + APIPATH + "\\" + getInterfaceName(value.getInterfaceName()) + DOT + JAVA;
+            //service 接口路径
+            String serviceInterfacePath = IMPORT+packagePath + DOT + SERVICEPATH + DOT + getInterfaceName(value.getInterfaceName())+"Service" + SPERATOR;
+            //service 接口class 路径
+            String serviceInterfaceClass = classPath + SERVICEPATH + "\\" + getInterfaceName(value.getInterfaceName())+"Service" + DOT + JAVA;
+            //service impl 路径
+            String serviceImplClass = classPath +SERVICEPATH+"\\"+ IMPLPATH + "\\" + getInterfaceName(value.getInterfaceName())+"ServiceImpl"  + DOT + JAVA;
+
+            File file = new File(interfaceClass);
             FileOutputStream fileOutputStream = new FileOutputStream(file);
+
+            File serviceInterfacefile = new File(serviceInterfaceClass);
+
+            FileOutputStream serviceInterfaceOutputStream = new FileOutputStream(serviceInterfacefile);
+
+            File serviceImplfile = new File(serviceImplClass);
+
+            FileOutputStream serviceImplOutputStream = new FileOutputStream(serviceImplfile);
+
             StringBuilder interfaceString = new StringBuilder();
+            //service class
+            StringBuilder serviceInterfaceString = new StringBuilder();
+            //serviceimpl class
+            StringBuilder serviceImplString = new StringBuilder();
             //package
             interfaceString.append(value.getPackagePath());
+
+            serviceInterfaceString.append(PACKAGE + packagePath + DOT + SERVICEPATH + SPERATOR + BR);
+
+            serviceImplString.append(PACKAGE + packagePath+DOT+SERVICEPATH + DOT + IMPLPATH + SPERATOR + BR);
             //import
             //br
             interfaceString.append(BR);
+            serviceInterfaceString.append(BR);
+            serviceImplString.append(BR);
             Set<String> importProperties = value.getImportProperties();
             //import
             interfaceString.append("import feign.Param;\nimport feign.RequestLine;\nimport feign.Body;\n");
+            //impl 需要打导入fegin和service 接口
+            serviceImplString.append(serviceInterfacePath+BR);
+            serviceImplString.append(interfacePath+BR);
+
+            serviceImplString.append("import feign.Feign;"+BR+
+                    "import org.springframework.beans.factory.annotation.Autowired;" +BR+
+                    "import org.springframework.stereotype.Service;"+BR);
             importProperties.forEach(item -> {
                         interfaceString.append(item);
+                        serviceInterfaceString.append(item);
+                        serviceImplString.append(item);
                     }
             );
             //public class name {
             interfaceString.append("public interface " + getInterfaceName(value.getInterfaceName()) + LEFT_BRACE + BR);
-
+            serviceImplString.append("@Service\n");
+            serviceImplString.append("public class"+SPEACE+getInterfaceName(value.getInterfaceName())+"ServiceImpl implements"+SPEACE+getInterfaceName(value.getInterfaceName())+"Service" + LEFT_BRACE + BR);
+            serviceImplString.append(TAB+"@Autowired" +BR+
+                                     TAB+"private Feign.Builder feign;"+BR);
+            serviceInterfaceString.append("public interface " + getInterfaceName(value.getInterfaceName())+"Service" + LEFT_BRACE + BR);
             value.getMethodModels().forEach(item -> {
 
                 //@RequestLine() Get
@@ -365,17 +413,24 @@ public class GenerateUtils {
                 StringJoiner urlJoiner = new StringJoiner("&", "?", "");
                 StringJoiner bodyJoiner = new StringJoiner("", "({\"", "\"})");
                 StringJoiner paramJoiner = new StringJoiner(",", "(", ")");
+                StringJoiner paramNameJoiner = new StringJoiner(",", "(", ")");
                 StringJoiner descrptionJoiner = new StringJoiner("*");
+                //service 和service impl 参数
+                StringJoiner interfaceparamJoiner = new StringJoiner(",", "(", ")");
                 //@Param
                 item.getParams().forEach(param -> {
                     urlJoiner.add(param.getName() + "=" + LEFT_BRACE + param.getName() + RIGHT_BRACE);
                     paramJoiner.add("@Param(\"" + param.getName() + "\") " + ModelClassType.getClassName(param.getType()) + SPEACE + param.getName());
+                    interfaceparamJoiner.add(ModelClassType.getClassName(param.getType()) + SPEACE + param.getName());
+                    paramNameJoiner.add(param.getName());
                     descrptionJoiner.add(param.getName() + "-->" + param.getDescription() + BR);
                 });
                 //post 请求
                 item.getParamsObject().forEach(paramObject -> {
                     bodyJoiner.add(paramObject.getName());
                     paramJoiner.add("@Param(\"" + paramObject.getName() + "\") " + paramObject.getSchema() + SPEACE + paramObject.getName());
+                    interfaceparamJoiner.add(paramObject.getSchema() + SPEACE + paramObject.getName());
+                    paramNameJoiner.add(paramObject.getName());
                 });
                 //描述
                 if (item.getDescription() != null) {
@@ -388,13 +443,24 @@ public class GenerateUtils {
                     interfaceString.append(TAB + "@Body" + bodyJoiner.toString() + BR);
                 }
                 interfaceString.append(TAB + item.getReturnName() + SPEACE + item.getMethodName().substring(0, item.getMethodName().indexOf("Using")) + (paramJoiner.length() != 2 ? paramJoiner.toString() : "()") + SPERATOR + BR);
+                serviceImplString.append(TAB+"@Override"+BR+TAB+"public"+SPEACE+ item.getReturnName() + SPEACE + item.getMethodName().substring(0, item.getMethodName().indexOf("Using")) + interfaceparamJoiner.toString() + LEFT_BRACE + BR);
+                //调用feign
+                serviceImplString.append(DOUBLE_TAB+"return feign.target("+getInterfaceName(value.getInterfaceName())+".class, \"\")."+item.getMethodName().substring(0, item.getMethodName().indexOf("Using"))+paramNameJoiner.toString()+SPERATOR+BR+TAB+RIGHT_BRACE+BR);
+                serviceInterfaceString.append(TAB + item.getReturnName() + SPEACE + item.getMethodName().substring(0, item.getMethodName().indexOf("Using")) +  interfaceparamJoiner.toString()+ SPERATOR + BR);
             });
             interfaceString.append(RIGHT_BRACE);
+            serviceImplString.append(RIGHT_BRACE);
+            serviceInterfaceString.append(RIGHT_BRACE);
             fileOutputStream.write(interfaceString.toString().getBytes());
             fileOutputStream.flush();
             fileOutputStream.close();
+            serviceInterfaceOutputStream.write(serviceInterfaceString.toString().getBytes());
+            serviceInterfaceOutputStream.flush();
+            serviceInterfaceOutputStream.close();
+            serviceImplOutputStream.write(serviceImplString.toString().getBytes());
+            serviceImplOutputStream.flush();
+            serviceImplOutputStream.close();
         }
-
 
     }
 

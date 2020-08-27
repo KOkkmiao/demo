@@ -12,6 +12,8 @@ import java.util.stream.Stream;
  */
 public class Contents {
     public static final String APIPATH ="api";
+    public static final String SERVICEPATH ="service";
+    public static final String IMPLPATH ="impl";
     public static final String JAVA ="java";
     public static final String MODELPATH = "entity";
     public static final String PACKAGE = "package ";
