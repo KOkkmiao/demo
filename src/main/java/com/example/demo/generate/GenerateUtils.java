@@ -511,7 +511,7 @@ public class GenerateUtils {
     }
 
     public static void main(String[] args) throws Exception {
-        GenerateUtils generateUtils = new GenerateUtils("http://192.168.5.137:8881/koala-finance/v2/api-docs", "com.example.demo.pa");
+        GenerateUtils generateUtils = new GenerateUtils("http://carapi.demo.ehi.com.cn/swagger/eHi.Car/v1", "com.example.demo.pa");
         generateUtils.generate();
     }
 }
